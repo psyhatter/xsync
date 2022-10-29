@@ -395,6 +395,20 @@ func TestMapOfSerialLoadOrCompute(t *testing.T) {
 			t.Errorf("values do not match for %d: %v", i, v)
 		}
 	}
+
+	t.Run(
+		"valueFn func should be called only once",
+		func(t *testing.T) {
+			m, counter := NewIntegerMapOf[int, int](), 0
+			for k := 0; k < numEntries; k++ {
+				m.LoadOrCompute(k, func() int { counter++; return k })
+			}
+
+			if counter != numEntries {
+				t.Fatalf("valueFn was called %d times, expected %d", counter, numEntries)
+			}
+		},
+	)
 }
 
 func TestMapOfSerialStoreThenDelete(t *testing.T) {
